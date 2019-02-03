@@ -3,6 +3,8 @@ import os
 import socket
 import smtplib
 import MySQLdb
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEText import MIMEText
 
 def get_total_size(pathname):
     """Return total size of file/directory
@@ -34,6 +36,7 @@ def send_mail(username):
 
 """Get all files under the directory."""
         list1 = os.listdir(directory)
+    
 """Loop and add files to list"""
         pairs = {}
         for file in list1:
