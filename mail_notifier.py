@@ -32,9 +32,9 @@ def send_mail(username):
         # The folder containing files.
         directory = "/home/"+username
 
-# Get all files.
+"""Get all files under the directory."""
         list1 = os.listdir(directory)
-# Loop and add files to list.
+"""Loop and add files to list"""
         pairs = {}
         for file in list1:
 
@@ -46,7 +46,7 @@ def send_mail(username):
                 out = size/(1024*1024)
                 pairs[file] = out
 
-# Sort list of tuples by the first element, size.
+"""Sort list of tuples by the first element, size."""
         pairs = sorted(pairs.items(), key=lambda kv: kv[1], reverse=True)
         host = socket.gethostname()
 
@@ -61,18 +61,23 @@ def send_mail(username):
         for row in records:
                 mail = row[1]+'@gmail.com'
                 receiver = mail
-#Details for sending the mail
+
+"""Details for sending the mail"""
         sender = '<SENDER>'
-        s = smtplib.SMTP('smtp.gmail.com')
-        s.starttls()
-
-        message = """Subject: ALERT!!!! Disk usage has exceeded.
-The disk usage of your account in the"""+host+""" has exceeded the limit, please delete some files to free space.The files/folders consuming high disk usage are given below in MBs.\n"""
-
+        msg = MIMEMultipart()
+        msg['From'] = sender
+        msg['To'] = receiver
+        msg['Subject'] = 'ALERT!!!! Disk usage has exceeded'
+        body = "The disk usage of your account in the" + host + "has exceeded the limit, please delete some files to free space.The files/folders consuming high disk usage are given below in MBs. \n\n"
+        
         for k in pairs:
-                message += k[0] + '     :        ' + str(k[1]) + '  MB \n'
-
-        s.sendmail(sender, receiver, message)
+                body += k[0] + '     :        ' + str(k[1]) + '  MB \n'
+        
+        msg.attach(MIMEText(body, 'plain'))
+        s = smtplib.SMTP('smtp.gmail.com',25)
+        s.starttls()
+        text = msg.as_string(
+        s.sendmail(sender, receiver, text)
         s.quit()
 
 
