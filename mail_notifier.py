@@ -6,6 +6,7 @@ import MySQLdb
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
 
+
 def get_total_size(pathname):
     """Return total size of file/directory
     input: path to a directory or file
@@ -30,29 +31,22 @@ def get_home_usage(home_dir = '/home'):
         all_home[home] = get_total_size(os.path.join(home_dir, home))
     return all_home
 
+
 def send_mail(username):
-        # The folder containing files.
+        """ The folder containing files."""
         directory = "/home/"+username
 
-"""Get all files under the directory."""
-        list1 = os.listdir(directory)
-    
-"""Loop and add files to list"""
+        """Loop and add files to list."""
         pairs = {}
-        for file in list1:
 
-        # Use join to get full file path.
-                location = os.path.join(directory, file)
+        for file1 in os.listdir(directory):
+                pairs[file1] = get_total_size(os.path.join(directory, file1))
 
-        # Get size and add to list of tuples.
-                size = os.path.getsize(location)
-                out = size/(1024*1024)
-                pairs[file] = out
-
-"""Sort list of tuples by the first element, size."""
+        """Sort list of tuples by the first element, size"""
         pairs = sorted(pairs.items(), key=lambda kv: kv[1], reverse=True)
         host = socket.gethostname()
-
+        
+        """Database details to fetch the data for the mail ids""" 
         IP = "<HOST_IP>"
         user = "<USER>"
         password = "<PASSWORD>"
@@ -65,7 +59,7 @@ def send_mail(username):
                 mail = row[1]+'@gmail.com'
                 receiver = mail
 
-"""Details for sending the mail"""
+        """Details for sending the mail"""
         sender = '<SENDER>'
         msg = MIMEMultipart()
         msg['From'] = sender
